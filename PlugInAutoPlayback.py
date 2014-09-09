@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
-import csv
 # import sys
 import time
 import datetime
@@ -13,7 +11,7 @@ from selenium.webdriver.common.keys import Keys
 
 def PlaugIn_IE_AutoPlayback():
     """IE自动化测试plugin对于DRM streaming的播放, 并保存每一次生成的log"""
-    browser = webdriver.Ie()
+    browser = webdriver.ie()
     browser.get('http://build.visualon.com/release/3.12.20-B70591/package/Ericsson/Plugin/Sample/window/SamplePlayer.html')
     time.sleep(30)
     elem = browser.find_element_by_id('userContext')  # Find the search box
@@ -26,10 +24,10 @@ def PlaugIn_IE_AutoPlayback():
     return True
 
 
-def analyzeLogs(logspath):
+def analyzeLogs(logsdir):
     now = datetime.datetime.now()
     newfolder = now.strftime('%Y%m%d-%H%M%S')
-    newFolderPath = logspath + '\\' + newfolder
+    newFolderPath = logsdir + '\\' + newfolder
     if not os.path.exists(newFolderPath):
         os.mkdir(newFolderPath)
     else:
@@ -43,8 +41,8 @@ def analyzeLogs(logspath):
             try:
                 newLogFileName = newFolderPath + "\\" + str(i) + '.log'
                 print newFolderPath
-                os.rename(logspath + 'volog.log', newLogFileName)
-                files = os.listdir(logspath)
+                os.rename(logsdir + '\\volog.log', newLogFileName)
+                files = os.listdir(logsdir)
                 print files
             except Exception as e:
                 print i
@@ -53,3 +51,6 @@ def analyzeLogs(logspath):
             pass
     print "Logs are ready!!!"
     return newFolderPath
+
+if __name__ == '__main__':
+    PlaugIn_IE_AutoPlayback()

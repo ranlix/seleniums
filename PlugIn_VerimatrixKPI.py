@@ -4,7 +4,6 @@
 import os
 import re
 import csv
-# import sys
 import time
 import datetime
 from selenium import webdriver
@@ -16,7 +15,7 @@ def PlaugIn_IE_AutoPlayback():
     browser = webdriver.Ie()
     browser.get('http://build.visualon.com/release/3.12.20-B70591/package/Ericsson/Plugin/Sample/window/SamplePlayer.html')
     time.sleep(30)
-    elem = browser.find_element_by_id('userContext')  # Find the search box
+    elem = browser.find_element_by_id('userContext')  # Find the text_input box
     elem.send_keys('http://10.2.68.24/ericsson/drm/cars/cars-nodrm.m3u8' + Keys.RETURN)
     browser.find_element_by_id('userContextBtn').click()
     print 'Start to play!'
@@ -29,14 +28,13 @@ def PlaugIn_IE_AutoPlayback():
 def analyzeLogs(logspath):
     now = datetime.datetime.now()
     newfolder = now.strftime('%Y%m%d-%H%M%S')
-    # logspath = r'\\fs\Temp\alex\logs\\'
-    newFolderPath = logspath + '\\' + newfolder
+    newFolderPath = os.path.join(logspath, newfolder)
     if not os.path.exists(newFolderPath):
         os.mkdir(newFolderPath)
     else:
         pass
 
-    for i in xrange(1, 5):
+    for i in xrange(1, 10):
         print i
         flag = PlaugIn_IE_AutoPlayback()
         print flag
@@ -104,7 +102,7 @@ def text2list(logfile):
     segmentList = [segmentDicList[key] for key in patternList[:3]]
     if "NA" not in segmentList:
         if len(segmentList) == 3:  # 如果成功取到三个元素，则可以进行运算计算出花费时间
-            print "准备计算时间差"
+            print "Ready to caculate the time of 'open to render'"
             print segmentList
             cost = segmentList[1] - segmentList[0]
             segmentList.append(cost)
@@ -112,7 +110,7 @@ def text2list(logfile):
             pass
     else:
         print logfile
-        print str(logfile) + "数据缺失:("
+        print str(logfile) + "Data is not complete:("
     return segmentList
 
 
@@ -129,16 +127,21 @@ def LogsList(urlsPath):
 
 
 def main():
-    # logspath = raw_input("Please input the directory of logs in 'volog.cfg': ")
     logspath = r'\\fs\Temp\alex\logs\\'
+    if 'volog.log' in os.listdir(logspath):
+        try:
+            os.remove(os.path.join(logspath, 'volog.log'))
+        except Exception as e:
+            print e
+    else:
+        pass
     urlsPath = analyzeLogs(logspath)
-    new_csv = urlsPath + '\\' + r"result.csv"
+    new_csv = os.path.join(urlsPath, r"result.csv")
     csvfile = file(new_csv, 'wb')
     writer = csv.writer(csvfile)
     writer.writerow(patternList)
     line_list = LogsList(urlsPath)
     print line_list
-    # line_list = segmentLog(log_file)
     for i in line_list:
         print i
         print "____________"
