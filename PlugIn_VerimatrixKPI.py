@@ -14,6 +14,7 @@ def PlaugIn_IE_AutoPlayback():
     """IE自动化测试plugin对于DRM streaming的播放, 并保存每一次生成的log"""
     browser = webdriver.Ie()
     browser.get('http://build.visualon.com/release/3.12.20-B70591/package/Ericsson/Plugin/Sample/window/SamplePlayer.html')
+    print "Wait for 30 seconds..."
     time.sleep(30)
     elem = browser.find_element_by_id('userContext')  # Find the text_input box
     elem.send_keys('http://10.2.68.24/ericsson/drm/cars/cars-nodrm.m3u8' + Keys.RETURN)
@@ -35,13 +36,13 @@ def analyzeLogs(logspath):
         pass
 
     for i in xrange(1, 10):
-        print i
+        print "Playback time: %d/10" % i
         flag = PlaugIn_IE_AutoPlayback()
         print flag
         if flag:
             try:
-                newLogFileName = newFolderPath + "\\" + str(i) + '.log'
-                print newFolderPath
+                new_log = str(i) + '.log'
+                newLogFileName = os.path.join(newFolderPath, new_log)
                 os.rename(logspath + 'volog.log', newLogFileName)
                 files = os.listdir(logspath)
                 print files
@@ -127,7 +128,16 @@ def LogsList(urlsPath):
 
 
 def main():
-    logspath = r'\\fs\Temp\alex\logs\\'
+    """
+    1. Close browsers;
+    2. Auto Play the DRM link and save logs;
+    3. Generate csv which contains the result of all logs
+    """
+    os.system("TASKKILL /IM iexplore.exe /F")
+    os.system("TASKKILL /IM firefox.exe /F")
+    os.system("TASKKILL /IM chrome.exe /F")
+    # logspath = r'\\fs\Temp\alex\logs\\'
+    logspath = raw_input("Please input the directory where logs are in: ")
     if 'volog.log' in os.listdir(logspath):
         try:
             os.remove(os.path.join(logspath, 'volog.log'))
